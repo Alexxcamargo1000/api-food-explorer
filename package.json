@@ -1,0 +1,18 @@
+{
+  "name": "backend-food",
+  "version": "1.0.0",
+  "description": "a food selling application create for challenge of Explorer",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./src/server.js"
+  },
+  "author": "Alex Camargo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
