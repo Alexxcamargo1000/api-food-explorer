@@ -1,15 +1,15 @@
-import { Knex } from 'knex';
+import type { Knex } from "knex";
 import path from 'path'
+// Update with your config settings.
 
-
-export const configKnex = {
+const config: { [key: string]: Knex.Config } = {
   development: {
     client: "sqlite3",
     connection: {
       filename: path.resolve(__dirname, "src", "database", "database.db"),
     },
     pool: {
-      afterCreate: (conn: any, cb: any) => conn.run("PRAGMA foreign_keys = ON", cb),
+      afterCreate: (conn: any, cb:any) => conn.run("PRAGMA foreign_keys = ON", cb),
     },
     migrations: {
       directory: path.resolve(
@@ -21,5 +21,7 @@ export const configKnex = {
       ),
     },
     useNullAsDefault: true,
-  } as Knex.Config,
+  },
 };
+
+module.exports = config;

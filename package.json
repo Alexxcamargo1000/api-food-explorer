@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  
   "scripts": {
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "migrate": "knex migrate:latest"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +20,7 @@
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
     "knex": "^2.3.0",
+    "sqlite": "^4.1.2",
     "sqlite3": "^5.1.2"
   }
 }

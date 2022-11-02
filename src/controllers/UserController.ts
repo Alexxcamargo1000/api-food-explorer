@@ -3,9 +3,9 @@ import { knexConnection } from "../database/knex";
 
 export class UserController {
   async create(request: Request, response: Response) {
-    const { name, email } = request.body
+    const { name, email, password } = request.body
 
     
-    response.status(201).json({ name, email })
+    response.status(201).json({ name, email, password })
   }
 }
