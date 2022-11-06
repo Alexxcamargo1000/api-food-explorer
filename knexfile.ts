@@ -1,4 +1,4 @@
-import type { Knex } from "knex";
+import { Knex } from "knex";
 import path from 'path'
 // Update with your config settings.
 
@@ -9,7 +9,7 @@ const config: { [key: string]: Knex.Config } = {
       filename: path.resolve(__dirname, "src", "database", "database.db"),
     },
     pool: {
-      afterCreate: (conn: any, cb:any) => conn.run("PRAGMA foreign_keys = ON", cb),
+      afterCreate: (conn: any, cb: any) => conn.run("PRAGMA foreign_keys = ON", cb),
     },
     migrations: {
       directory: path.resolve(
@@ -24,4 +24,4 @@ const config: { [key: string]: Knex.Config } = {
   },
 };
 
-module.exports = config;
+export default config;
