@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text("image")
     table.integer("priceInCents")
     table.text("user_id").references("id").inTable("users").onDelete("CASCADE")
-    table.text("user_id").references("id").inTable("type_of_food").onDelete("CASCADE")
+    table.text("type_of_food_id").references("id").inTable("type_of_food").onDelete("CASCADE")
     table.timestamp("created_at")
     table.timestamp("updated_at")
   })

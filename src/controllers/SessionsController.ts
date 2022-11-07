@@ -41,6 +41,10 @@ export class SessionsController {
       expiresIn,
     })
 
+    if (user.isAdmin) {
+      return response.json({user, token, admin: true});
+    }
+
     return response.json({user, token});
 
   }

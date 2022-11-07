@@ -11,26 +11,9 @@ interface User {
   name: string;
   email: string;
   password: string;
-  isAdmin: boolean;
   created_at: Date;
   updated_at: Date;
 }
-
-const createUserBody = z.object({
-  name: z.string({
-    required_error: "o nome é obrigatório",
-    invalid_type_error: "o nome tem que ser um texto",
-  }).min(3, { message: "Digite o nome completo" }).nullish(),
-  email: z.string().email({
-    message: "Email invalido"
-  }),
-  password: z.string({
-    invalid_type_error: "erro de tipo"
-  }).min(8, { message: "a senha precisa de pelo menos oito dígitos" }).nullish(),
-  old_password: z.string()
-    .min(8, { message: "a senha precisa de pelo menos oito dígitos" }).nullish()
-
-})
 
 export class UserController {
   async create(request: Request, response: Response) {
