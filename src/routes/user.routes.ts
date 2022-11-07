@@ -8,6 +8,7 @@ const userController = new UserController()
 
 userRouter.post("/", userController.create)
 userRouter.put("/", ensureAuthenticated, userController.update)
+userRouter.delete("/", ensureAuthenticated, userController.delete)
 
 
 export default userRouter

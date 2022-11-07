@@ -34,50 +34,72 @@ const createUserBody = z.object({
 
 export class UserController {
   async create(request: Request, response: Response) {
-
+    
+    const createUserBody = z.object({
+      name: z.string({
+        required_error: "o nome é obrigatório",
+        invalid_type_error: "o nome tem que ser um texto",
+      }).min(3, { message: "Digite o nome completo" }),
+      email: z.string().email({
+        message: "Email invalido"
+      }),
+      password: z.string()
+        .min(8, { message: "a senha precisa de pelo menos oito dígitos" }),
+    })
    
 
     const { name, email, password } = createUserBody.parse(request.body)
 
+     
+    const hashPassword = await hash(password, 8)
     
-    if(password && email ) {
-    
-      const hashPassword = await hash(password, 8)
-      
-      const id = uuidv4()
-      const created_at = new Date().toISOString()
-      const updated_at = new Date().toISOString()
+    const id = uuidv4()
+    const created_at = new Date().toISOString()
+    const updated_at = new Date().toISOString()
 
-      const checkedEmailUsed = await knexConnection("users").where({ email })
+    const checkedEmailUsed = await knexConnection("users").where({ email })
 
 
-      if (checkedEmailUsed.length > 0) {
+    if (checkedEmailUsed.length > 0) {
 
-        throw new AppError("Email já esta em uso")
-      }
+      throw new AppError("Email já esta em uso")
+    }
 
-      await knexConnection("users").insert({
-        id,
-        name,
-        email: email.toLowerCase(),
-        password: hashPassword,
-        created_at,
-        updated_at
-      })
+    await knexConnection("users").insert({
+      id,
+      name,
+      email: email.toLowerCase(),
+      password: hashPassword,
+      created_at,
+      updated_at
+    })
 
 
       response.status(201).json({ message: 'usuário criado com sucesso' })
 
-    } else {
-      throw new AppError("o email e a senha é obrigatório ")
-    }
+   
 
   }
 
   async update(request: Request, response: Response) {
 
+    const updateUserBody = z.object({
+      name: z.string({
+        required_error: "O nome é obrigatório"
+      }).min(3, { message: "Digite o nome completo" }),
+      email: z.string({
+        required_error: "O email é obrigatório"
+      }).email({
+        message: "Email invalido"
+      }),
+      newPassword: z.string()
+        .min(8, { message: "a senha precisa de pelo menos oito dígitos" }),
+      old_password: z.string()
+      .min(8, { message: "a senha precisa de pelo menos oito dígitos" }).nullish(),
+    })
+
     const  user_id  = request.user.id
-    const { name, email, password, old_password } = createUserBody.parse(request.body)
+    const { name, email, newPassword, old_password } = updateUserBody.parse(request.body)
 
     const user: User = await knexConnection("users").where({id: user_id}).first()
     const checkedEmailUsed: User = await knexConnection("users").where({email}).first()
@@ -87,35 +109,27 @@ export class UserController {
     }
 
 
-    if (password && !old_password) {
-      throw new AppError("Precisa digitar a senha nova para mudar");
+    if (newPassword && !old_password) {
+      throw new AppError("Precisa digitar a senha antiga para mudar");
     }
 
-    if(password && old_password) {
+    if(newPassword && old_password) {
 
       const comparePassword = await compare(old_password, user.password )
      
       if(!comparePassword) {
         throw new AppError("a senha não corresponde com a antiga")
       }
-      const hashPassword = await hash(password, 8)
+      const hashNewPassword = await hash(newPassword, 8)
 
 
-      user.password = hashPassword
+      user.password = hashNewPassword
 
     }
 
-    if(name) {
-      user.name = name
-    }
-    if(email) {
-      user.email = email
-    }
-
-
-    
-
-  
+    user.name = name
+    user.email = email
+      
     await knexConnection("users").where({ id: user_id }).update({
       name: user.name,
       email: user.email,
@@ -123,7 +137,6 @@ export class UserController {
       updated_at: new Date().toISOString()
 
     })
-
 
     response.json(user)
   }
