@@ -5,6 +5,7 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("foods", (table) => {
     table.text("id").primary()
     table.text("name").notNullable()
+    table.text("slug").unique()
     table.text("description")
     table.text("image")
     table.integer("priceInCents")

@@ -1,6 +1,9 @@
+import { Request, Response } from "express";
+
 interface Food {
   id: string;
   name: string;
+  slug: string;
   description: string;
   image: string;
   priceInCents: number;
@@ -13,4 +16,9 @@ interface Food {
 //str.replace(/\s+/g, '-').toLowerCase(); slug
 class FoodController {
 
+  async create(request: Request, response: Response){
+  const {name, description, priceInCents, typeFood} = request.body
+
+
+  }
 }
