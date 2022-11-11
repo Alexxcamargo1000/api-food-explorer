@@ -4,9 +4,9 @@ import { Knex } from "knex"
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("ingredients", (table) => {
     table.text("id").primary()
-    table.text("name").notNullable()
+    table.text("name").unique()
     table.text("image")
-    table.text("food_id").references("id").inTable("foods").onDelete("CASCADE")
+    table.text("food_id").references("id").inTable("foods")
   })
 }
 

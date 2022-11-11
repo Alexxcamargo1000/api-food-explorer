@@ -30,7 +30,7 @@ app.use((error: Object, request: Request, response: Response, next: NextFunction
       return response.status(400).json({
         code: error.issues[0].code,
         status: "error",
-        message: "O tipo esperado não corresponde",
+        message: error.issues[0].message,
       })
     }
     
