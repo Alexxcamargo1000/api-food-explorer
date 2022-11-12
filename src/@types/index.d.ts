@@ -29,3 +29,8 @@ interface Ingredients {
   image: string;
   food_id: string;
 } 
+
+interface TypeFood {
+  id: string;
+  name: string;
+}

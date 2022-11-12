@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { number, z } from "zod";
 import { knexConnection } from "../database/knex";
 import { AppError } from "../utils/AppError";
-
+import { v4 as uuidv4 } from 'uuid';
+import { DiskStorage } from "../providers/DiskStorage";
 
 
 //str.replace(/\s+/g, '-').toLowerCase(); slug
@@ -18,7 +19,7 @@ export class FoodController {
         .transform((price) => Number(price))
         .or(number().nonnegative({message: 'O valor nao pode ser negativo'})),
       typeFood: z.string(),
-      ingredients: z.string().transform((ingredient) => ingredient.split(',') )
+      ingredients: z.string().transform((ingredient) => ingredient.split(','))
     })
 
     const createFoodImageFile = z.string({
@@ -26,23 +27,44 @@ export class FoodController {
     })
 
     const {name, description, priceInCents, typeFood, ingredients} = createFoodBody.parse(request.body)
-
+    const user_id = request.user.id
     const image  = createFoodImageFile.parse(request.file?.filename)
+    const id = uuidv4()
+    const diskStorage = new DiskStorage()
+    const imageFile = await diskStorage.save(image)
 
 
-    const ca = ingredients.map( async ingredient =>  {
-      const existIngredient = await knexConnection("ingredients").where({ name: ingredient }).first()
-      
-      if (!existIngredient) {
-        throw new AppError("esse ingrediente não existe")
-      }
+    const checkTypeFood: TypeFood = await knexConnection("type_of_food").where({name: typeFood }).first()
+    const user: User = await knexConnection("users").where({id: user_id}).first()
 
-      // await knexConnection("ingredients").where({ name: ingredient}).update({food_id: foood.id})
-    
+    if(!user.isAdmin) {
+      throw new AppError("não autorizado", 401)
+    }
+
+    if(!checkTypeFood.id) {
+      throw new AppError("esse tipo de alimento não esta cadastrado")
+    }
+
+    const food ={
+      id,
+      name,
+      description,
+      image: imageFile,
+      priceInCents,
+      user_id,
+      type_of_food_id: checkTypeFood.id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+
+    const createFood = await knexConnection("foods").insert(food)
+     
+    const ingredientsWithFoodID = ingredients.map(async ingredient => {
+
+      await knexConnection("ingredients").where({name : ingredient}).update('food_id', food.id)
     })
 
-
-    response.json({name, description, priceInCents, typeFood, ingredients})
+    response.json(food)
 
 
 

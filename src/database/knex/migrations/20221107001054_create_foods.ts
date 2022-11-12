@@ -4,7 +4,7 @@ import { Knex } from "knex"
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("foods", (table) => {
     table.text("id").primary()
-    table.text("name").notNullable()
+    table.text("name")
     table.text("slug").unique()
     table.text("description")
     table.text("image")

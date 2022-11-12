@@ -6,7 +6,6 @@ export async function up(knex: Knex): Promise<void> {
     table.text("id").primary()
     table.text("name").unique()
     table.text("image")
-    table.text("food_id").references("id").inTable("foods")
   })
 }
 

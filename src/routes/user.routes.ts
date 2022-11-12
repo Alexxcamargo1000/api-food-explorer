@@ -10,8 +10,8 @@ const userAdminController = new UserAdminController()
 
 userRouter.post("/", userController.create)
 userRouter.post("/admin", userAdminController.create)
-userRouter.put("/", ensureAuthenticated, userController.update)
-userRouter.delete("/", ensureAuthenticated, userController.delete)
+userRouter.put("/admin", ensureAuthenticated, userAdminController.update)
+userRouter.delete("/admin", ensureAuthenticated, userAdminController.delete)
 
 
 export default userRouter
