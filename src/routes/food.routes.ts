@@ -15,5 +15,8 @@ foodRouter.post("/",
  foodController.create
 )
 
+foodRouter.get("/:slug", ensureAuthenticated, foodController.show)
+foodRouter.get("/", ensureAuthenticated, foodController.index)
+
 
 export default foodRouter

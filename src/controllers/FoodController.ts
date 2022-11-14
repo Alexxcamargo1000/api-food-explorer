@@ -41,13 +41,14 @@ export class FoodController {
       throw new AppError("não autorizado", 401)
     }
 
-    if(!checkTypeFood.id) {
+    if(!checkTypeFood) {
       throw new AppError("esse tipo de alimento não esta cadastrado")
     }
 
-    const food ={
+    const food :Food ={
       id,
       name,
+      slug: name.replace(/\s+/g, '-').toLowerCase(),
       description,
       image: imageFile,
       priceInCents,
@@ -57,18 +58,93 @@ export class FoodController {
       updated_at: new Date().toISOString()
     }
 
-    const createFood = await knexConnection("foods").insert(food)
-     
-    const ingredientsWithFoodID = ingredients.map(async ingredient => {
 
-      await knexConnection("ingredients").where({name : ingredient}).update('food_id', food.id)
-    })
+    await knexConnection("foods").insert(food)
 
-    response.json(food)
+
+    if(ingredients.length > 0 ) {
+      const idIngredients: Ingredients[] = await knexConnection("ingredients")
+      .select("id")
+      .whereIn("name", ingredients)
+
+      if(idIngredients.length < 1) {
+        throw new AppError("o ingredient não existe")
+      }
+      
+
+      idIngredients.forEach(async ingredientId => {
+
+      try {
+        const id = uuidv4()
+        await knexConnection("foods_ingredients").insert({
+        id,
+        ingredient_id: ingredientId.id,
+        food_id: food.id
+      })
+      } catch (err) {
+        console.log(err);
+        
+        throw new AppError("erro do servidor cadastrar",500)
+      }
+    } )
+
+    return response.json({food, idIngredients})
+
+    }
+
+    
+
+    return response.json({food})
 
 
 
 
   }
+
+  async show(request: Request, response: Response) {
+    const {slug} = request.params
+
+    
+    const food: Food = await knexConnection("foods").where({slug}).first()
+    console.log(food);
+
+    if(!food) {
+      throw new AppError("alimento nao cadastrado")
+    }
+    const ingredientsId =  (await knexConnection("foods_ingredients").where({food_id: food.id}).select("ingredient_id as id")).map(ingredient => ingredient.id)
+
+
+
+    const ingredients = await knexConnection("ingredients").whereIn("id",ingredientsId )
+    
+    return response.json({
+      food,
+      ingredients
+    })
+  }
+
+  async index(request: Request, response: Response) {
+    
+    const {name, ingredient} = request.query
+    const foods: Food[] = await knexConnection("foods").whereLike("name", `%${name}%`)
+
+    const foodWithIngredient = await Promise.all( foods.map(async food => {
+      const ingredientsId =  (await knexConnection("foods_ingredients").where({food_id: food.id}).select("ingredient_id as id")).map(ingredient => ingredient.id)
+      
+      
+      const ingredients = await knexConnection("ingredients").whereIn("id",ingredientsId )
+
+      return {
+        food,
+        ingredients
+      }
+    }))
+
+    console.log( foodWithIngredient);
+    
+
+    return response.json(foodWithIngredient)
+  }
+
 }
 

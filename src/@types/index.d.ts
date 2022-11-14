@@ -18,8 +18,8 @@ interface Food {
   priceInCents: number;
   user_id: string;
   type_of_food_id: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 
@@ -27,10 +27,15 @@ interface Ingredients {
   id: string;
   name: string;
   image: string;
-  food_id: string;
 } 
 
 interface TypeFood {
   id: string;
   name: string;
+}
+
+interface FoodsIngredients {
+  id: string;
+  ingredient_id: string;
+  food_id: string;
 }
