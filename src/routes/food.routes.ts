@@ -16,6 +16,7 @@ foodRouter.post("/",
 )
 
 foodRouter.get("/:slug", ensureAuthenticated, foodController.show)
+foodRouter.delete("/:slug", ensureAuthenticated, foodController.delete)
 foodRouter.get("/", ensureAuthenticated, foodController.index)
 
 

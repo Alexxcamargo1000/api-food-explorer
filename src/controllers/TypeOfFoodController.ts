@@ -27,4 +27,12 @@ export class TypeFood  {
       message: "Criado"
     })
   }
+
+  async index(request: Request, response: Response)  {
+
+    const types = await knexConnection("type_of_food")
+
+    return response.json(types)
+  }
+
 }

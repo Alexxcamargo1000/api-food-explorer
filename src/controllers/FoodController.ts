@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { any, number, ObjectPair, TypeOf, z } from "zod";
+import { number, z } from "zod";
 import { knexConnection } from "../database/knex";
 import { AppError } from "../utils/AppError";
 import { v4 as uuidv4 } from 'uuid';
@@ -188,6 +188,8 @@ export class FoodController {
     if(!food){
       throw new AppError("comida não encontrado")
     }
+    
+    await knexConnection("foods_ingredients").where({food_id: food.id}).delete()
     await knexConnection("foods").where({id: food.id}).delete()
 
     return response.json({message: `${food.name} foi deletado com sucesso`})
