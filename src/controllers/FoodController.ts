@@ -6,24 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { DiskStorage } from "../providers/DiskStorage";
 
 
-interface FoodWithIngredients {
-  id: string;
-  food_id: string;
-  "name": string;
-  slug: string;
-  priceInCents: string;
-  food_image: string;
-  
-  ingredient_id: string;
-  ingredient: string;
-  ingredient_image: string;
-
-}
 
 //str.replace(/\s+/g, '-').toLowerCase(); slug
 export class FoodController {
-
-
 
   async create(request: Request, response: Response){
     const createFoodBody  = z.object({
@@ -180,10 +165,33 @@ export class FoodController {
 
       return response.json(searchFoodWithIngredient)
 
-    }
-    
+    }    
 
     return response.json(foodWithIngredient)
+
+  }
+
+  async delete(request: Request, response: Response) {
+
+    const user_id = request.user.id
+
+    const { slug } = request.params
+
+    const user: User = await knexConnection("users").where({id : user_id}).first()
+
+    if(!user.isAdmin) {
+      throw new AppError("Usuário não autorizado")
+    }
+
+    const food: Food = await knexConnection("foods").where({ slug }).first()
+
+    if(!food){
+      throw new AppError("comida não encontrado")
+    }
+    await knexConnection("foods").where({id: food.id}).delete()
+
+    return response.json({message: `${food.name} foi deletado com sucesso`})
+
 
   }
 
