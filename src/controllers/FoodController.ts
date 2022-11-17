@@ -1,10 +1,24 @@
 import { Request, Response } from "express";
-import { number, z } from "zod";
+import { any, number, ObjectPair, TypeOf, z } from "zod";
 import { knexConnection } from "../database/knex";
 import { AppError } from "../utils/AppError";
 import { v4 as uuidv4 } from 'uuid';
 import { DiskStorage } from "../providers/DiskStorage";
 
+
+interface FoodWithIngredients {
+  id: string;
+  food_id: string;
+  "name": string;
+  slug: string;
+  priceInCents: string;
+  food_image: string;
+  
+  ingredient_id: string;
+  ingredient: string;
+  ingredient_image: string;
+
+}
 
 //str.replace(/\s+/g, '-').toLowerCase(); slug
 export class FoodController {
@@ -48,7 +62,7 @@ export class FoodController {
     const food :Food ={
       id,
       name,
-      slug: name.replace(/\s+/g, '-').toLowerCase(),
+      slug: name.replace(/\s+/g, '-').toLowerCase().trim(),
       description,
       image: imageFile,
       priceInCents,
@@ -124,15 +138,19 @@ export class FoodController {
   }
 
   async index(request: Request, response: Response) {
+    const createQueryParams = z.object({
+      search: z.string().optional()
+    })
     
-    const {name, ingredient} = request.query
-    const foods: Food[] = await knexConnection("foods").whereLike("name", `%${name}%`)
+    const { search } = createQueryParams.parse(request.query)
+    
+    const foods: Food[] = await knexConnection("foods")
 
     const foodWithIngredient = await Promise.all( foods.map(async food => {
       const ingredientsId =  (await knexConnection("foods_ingredients").where({food_id: food.id}).select("ingredient_id as id")).map(ingredient => ingredient.id)
       
       
-      const ingredients = await knexConnection("ingredients").whereIn("id",ingredientsId )
+      const ingredients: Ingredients[] = await knexConnection("ingredients").whereIn("id",ingredientsId )
 
       return {
         food,
@@ -140,10 +158,33 @@ export class FoodController {
       }
     }))
 
-    console.log( foodWithIngredient);
+    if(search) {
+
+     
+      const searchFoodWithIngredient = [] as typeof foodWithIngredient
+       
+      foodWithIngredient.forEach(({food, ingredients}) => {
+            
+        ingredients.forEach(({name: ingredient}) => {
+         if(!(food.name.includes(search) || ingredient.includes(search)) 
+            && food.name.includes(search) || ingredient.includes(search) ) {
+  
+              searchFoodWithIngredient.push({food, ingredients})
+          }
+        })
+      })
+
+      if(searchFoodWithIngredient.length < 1) {
+        return response.json({message: "não foi encontrado nada"})
+      }
+
+      return response.json(searchFoodWithIngredient)
+
+    }
     
 
     return response.json(foodWithIngredient)
+
   }
 
 }
