@@ -46,7 +46,6 @@ export class IngredientsController {
    
   }
 
-
   async delete(request: Request, response: Response) {
     const { name } = request.params
     
@@ -66,6 +65,12 @@ export class IngredientsController {
    await knexConnection("ingredients").where({name}).delete()
     
     response.json({message: "ingredient deletado"})
+  }
+
+  async index(request: Request, response: Response) {
+
+    const ingredients = await knexConnection("ingredients")
+    return response.json(ingredients)
   }
 
 }

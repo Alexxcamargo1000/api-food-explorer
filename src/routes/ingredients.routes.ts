@@ -16,6 +16,8 @@ ingredientsRouter.post("/",
 )
 
 ingredientsRouter.delete("/:name", ensureAuthenticated, ingredientsController.delete) 
+ingredientsRouter.get("/", ensureAuthenticated, ingredientsController.index) 
+
 
 
 export default ingredientsRouter
