@@ -66,3 +66,28 @@ const foods: Food[] = await knexConnection("foods").whereLike("name", `%${search
       ==========================================================================
 
        if(!(food.name.includes(search) || ingredient.includes(search)) && food.name.includes(search) || ingredient.includes(search))
+
+
+       __________________________________________________________________________
+       ________________________________________________________________________-_
+
+## update
+
+
+    food.name = name ?? food.name
+    food.slug = name?.replace(/\s+/g, '-').toLowerCase() ?? food.slug
+    food.description = description ?? food.description
+    food.priceInCents = priceInCents ?? food.priceInCents
+
+    if(imageUpdated) {
+      await diskStorage.delete(food.image)
+
+      const filename = await diskStorage.save(imageUpdated)
+      food.image = filename
+    }
+    
+    
+    
+    food.updated_at = new Date().toISOString()
+    await knexConnection("foods").where({id: food.id}).update(food)
+    
