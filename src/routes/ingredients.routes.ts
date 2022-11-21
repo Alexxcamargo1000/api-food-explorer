@@ -9,14 +9,19 @@ const ingredientsRouter = Router()
 const ingredientsController = new IngredientsController()
 const uploadFile = multer(MULTER)
 
+ingredientsRouter.get("/", ensureAuthenticated, ingredientsController.index)
+ingredientsRouter.delete("/:name", ensureAuthenticated, ingredientsController.delete) 
+
 ingredientsRouter.post("/",
  ensureAuthenticated, 
  uploadFile.single("image"), 
  ingredientsController.create
 )
-
-ingredientsRouter.delete("/:name", ensureAuthenticated, ingredientsController.delete) 
-ingredientsRouter.get("/", ensureAuthenticated, ingredientsController.index) 
+ingredientsRouter.put("/:id", 
+  ensureAuthenticated,
+  uploadFile.single("imageUpdated"),
+  ingredientsController.update
+)
 
 
 

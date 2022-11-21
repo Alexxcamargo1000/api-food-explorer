@@ -5,9 +5,6 @@ import { AppError } from "../utils/AppError";
 import { v4 as uuidv4 } from 'uuid';
 import { DiskStorage } from "../providers/DiskStorage";
 
-
-
-//str.replace(/\s+/g, '-').toLowerCase(); slug
 export class FoodController {
 
   async create(request: Request, response: Response){
@@ -47,7 +44,7 @@ export class FoodController {
     const food :Food ={
       id,
       name,
-      slug: name.replace(/\s+/g, '-').toLowerCase().trim(),
+      slug: name.replace(/\s+/g, '-').toLowerCase(),
       description,
       image: imageFile,
       priceInCents,
@@ -83,7 +80,7 @@ export class FoodController {
       } catch (err) {
         console.log(err);
         
-        throw new AppError("erro do servidor cadastrar",500)
+        throw new AppError("erro do servidor ao cadastrar o ingrediente",500)
       }
     } )
 
@@ -195,6 +192,81 @@ export class FoodController {
     return response.json({message: `${food.name} foi deletado com sucesso`})
 
 
+  }
+
+  async update(request: Request, response: Response) {
+
+    const createFoodBody  = z.object({
+      name: z.string().optional(),
+      description: z.string().optional(),
+      priceInCents: z.string().optional()
+        .transform((price) => Number(price))
+        .or(number().nonnegative({message: 'O valor nao pode ser negativo'})),
+      ingredients: z.string().optional().transform((ingredient) => {
+        if(ingredient){
+          return ingredient.split(',');
+        }
+      })
+    })
+
+    const user_id = request.user.id
+    const {name, description, priceInCents, ingredients } = createFoodBody.parse(request.body)
+    const imageUpdated = request.file?.filename
+    const {slug} = request.params
+    const diskStorage = new DiskStorage();
+
+    const user : User = await knexConnection("users").where({id : user_id}).first()
+    if(!user.isAdmin) {
+      throw new AppError("não autorizado", 401)
+    }
+
+    const food: Food = await knexConnection("foods").where({slug}).first()
+
+    if(!food) {
+      throw new AppError("A comida não existe")
+    }
+    if(priceInCents < 0) {
+      throw new AppError("O valor da comida não pode ser negativo")
+    }
+
+    food.name = name ?? food.name
+    food.slug = name?.replace(/\s+/g, '-').toLowerCase() ?? food.slug
+    food.description = description ?? food.description
+    food.priceInCents = priceInCents ?? food.priceInCents
+
+    if(imageUpdated) {
+      await diskStorage.delete(food.image)
+
+      const filename = await diskStorage.save(imageUpdated)
+      food.image = filename
+    }
+    
+    food.updated_at = new Date().toISOString()
+    await knexConnection("foods").where({id: food.id}).update(food)
+    
+    if(ingredients) {
+
+      const findIngredients: Ingredients[] = await knexConnection("ingredients")
+        .whereIn("name", ingredients)
+
+        if(findIngredients.length < 1) {
+          throw new AppError("adicione pelo menos um ingrediente valido")
+        }
+      
+      await knexConnection("foods_ingredients").where({food_id: food.id}).delete()
+
+      findIngredients.forEach(async ingredient => {
+        await knexConnection("foods_ingredients").insert({
+          id: uuidv4(),
+          food_id: food.id,
+          ingredient_id: ingredient.id
+        })
+      })     
+
+    }    
+
+
+    return response.json({message: "comida atualizada com sucesso"})
   }
 
 }

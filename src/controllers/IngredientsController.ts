@@ -73,4 +73,43 @@ export class IngredientsController {
     return response.json(ingredients)
   }
 
+  async update(request: Request, response: Response) {
+    const user_id = request.user.id
+    const {name, imageUpdated} = request.body
+    const { id } = request.params
+    const diskStorage = new DiskStorage()
+
+    const user: User = await knexConnection("users").where({id: user_id}).first()
+    
+    if(!user.isAdmin) {
+      throw new AppError("não autorizado", 401)
+    }
+
+    const ingredient: Ingredients = await knexConnection("ingredients").where({ id }).first()
+    
+    if(!ingredient) {
+      throw new AppError("ingrediente não existe")
+    }
+
+    ingredient.name = name ?? ingredient.name
+
+    if(imageUpdated) {
+      try {
+        await diskStorage.deleteIngredientsFile(ingredient.image)
+        const filename = await diskStorage.save(imageUpdated)
+        ingredient.image = filename
+      } catch(err) {
+        throw new AppError("erro ao atualizar imagem do ingrediente", 500)
+      }
+    }
+
+    await knexConnection("ingredients").where({id: ingredient.id}).update({
+      name: ingredient.name,
+      Image: ingredient.image
+    })
+
+    response.json({message: "ingrediente atualizado"})
+
+  }
+
 }

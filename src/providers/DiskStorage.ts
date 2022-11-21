@@ -34,4 +34,17 @@ export class DiskStorage {
     
     await fs.promises.unlink(filePath)
   }
+
+  async deleteIngredientsFile(file: string) {
+    const filePath = path.resolve(UPLOAD_FOLDER_INGREDIENTS, file)
+
+    try {
+      await fs.promises.stat(filePath)
+    } catch {
+      return
+    }
+
+    
+    await fs.promises.unlink(filePath)
+  }
 }
