@@ -1,4 +1,5 @@
 import { Router } from "express"
+
 import { TypeFood } from "../controllers/TypeOfFoodController"
 import { ensureAuthenticated } from "../middleware/ensureAuthenticated"
 

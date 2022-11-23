@@ -1,7 +1,11 @@
-import fs from 'fs'
-import path from 'path'
-import { TMP_FOLDER, UPLOAD_FOLDER, UPLOAD_FOLDER_INGREDIENTS } from '../config/upload'
+import fs from "fs"
+import path from "path"
 
+import {
+  TMP_FOLDER,
+  UPLOAD_FOLDER,
+  UPLOAD_FOLDER_INGREDIENTS,
+} from "../config/upload"
 
 export class DiskStorage {
   async save(file: string) {
@@ -31,7 +35,6 @@ export class DiskStorage {
       return
     }
 
-    
     await fs.promises.unlink(filePath)
   }
 
@@ -44,7 +47,6 @@ export class DiskStorage {
       return
     }
 
-    
     await fs.promises.unlink(filePath)
   }
 }

@@ -91,3 +91,17 @@ const foods: Food[] = await knexConnection("foods").whereLike("name", `%${search
     food.updated_at = new Date().toISOString()
     await knexConnection("foods").where({id: food.id}).update(food)
     
+-------------------------------------------------------------------------------------
+
+
+          
+          
+          const hasFood = food.name.includes(search)
+          const hasIngredient = ingredient.includes(search)
+          console.log(`${food.name} ||${hasFood}`);
+         console.log(`${ingredient} || ${hasIngredient}`);
+             
+          
+          if (hasFood || hasIngredient) {
+            searchFoodWithIngredient.push({ food, ingredients })
+          }

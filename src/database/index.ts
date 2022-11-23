@@ -1,7 +1,6 @@
+import path from 'path'
 import { open } from 'sqlite'
 import sqlite3 from 'sqlite3'
-import path from 'path'
-
 
 export async function createDatabaseConnection() {
   const database = await open({

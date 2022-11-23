@@ -4,8 +4,8 @@ interface User {
   email: string;
   isAdmin: boolean;
   password: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 
 }
 
@@ -23,18 +23,18 @@ interface Food {
 }
 
 
-interface Ingredients {
+interface Ingredient {
   id: string;
   name: string;
   image: string;
 } 
 
-interface TypeFood {
+interface TypeOfFood {
   id: string;
   name: string;
 }
 
-interface FoodsIngredients {
+interface FoodIngredient {
   id: string;
   ingredient_id: string;
   food_id: string;

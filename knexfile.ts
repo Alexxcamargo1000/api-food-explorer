@@ -1,4 +1,4 @@
-import { Knex } from "knex";
+import { Knex } from "knex"
 import path from 'path'
 // Update with your config settings.
 
@@ -22,6 +22,6 @@ const config: { [key: string]: Knex.Config } = {
     },
     useNullAsDefault: true,
   },
-};
+}
 
-export default config;
+export default config
