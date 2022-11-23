@@ -1,5 +1,5 @@
 import "express-async-errors"
-
+import "dotenv/config"
 import cors from "cors"
 import router from "./routes"
 import { ZodError } from "zod"
@@ -9,6 +9,7 @@ import { AppError } from "./utils/AppError"
 import { UPLOAD_FOLDER, UPLOAD_FOLDER_INGREDIENTS } from "./config/upload"
 
 const app = express()
+
 app.use(cors())
 app.use(express.json())
 

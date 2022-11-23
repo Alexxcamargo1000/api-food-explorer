@@ -1,7 +1,7 @@
 
 export const auth = {
   jwt: {
-    secret: "default",
+    secret: process.env.AUTH_SECRET,
     expiresIn: "2d"
   }
 }
