@@ -41,7 +41,7 @@ export class FoodController {
     }
         
 
-    const checkTypeFood: TypeFood = await knexConnection("type_of_food")
+    const checkTypeFood: TypeOfFood = await knexConnection("type_of_food")
       .where({ name: typeFood })
       .first()
 
@@ -74,7 +74,6 @@ export class FoodController {
     
     if (hasIngredients) {
       const idIngredients: Ingredient[] = await knexConnection("ingredients")
-        .select("id")
         .whereIn("name", ingredients)
 
       if (idIngredients.length < 1) {
