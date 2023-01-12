@@ -80,7 +80,8 @@ export class IngredientsController {
   }
 
   async index(request: Request, response: Response) {
-    const ingredients = await knexConnection("ingredients")
+    const {name} = request.query
+    const ingredients = await knexConnection("ingredients").whereLike(`name` ,`%${name}%`).orderBy(`name`)
     return response.json(ingredients)
   }
 

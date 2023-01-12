@@ -11,7 +11,7 @@ const ingredientsController = new IngredientsController()
 const uploadFile = multer(MULTER)
 
 
-ingredientsRouter.get("/", ensureAuthenticated, ingredientsController.index)
+ingredientsRouter.get("/", ingredientsController.index)
 
 ingredientsRouter.delete(
   "/:name",

@@ -8,7 +8,7 @@ const typeFoodRouter = Router()
 const typeFoodController = new TypeFood()
 
 typeFoodRouter.post("/", ensureAuthenticated, typeFoodController.create)
-typeFoodRouter.get("/", ensureAuthenticated, typeFoodController.index)
+typeFoodRouter.get("/", typeFoodController.index)
 
 
 export default typeFoodRouter
