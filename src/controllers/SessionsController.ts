@@ -42,10 +42,14 @@ export class SessionsController {
       expiresIn,
     })
 
-    if (user.isAdmin) {
-      return response.json({ user, token, admin: user.isAdmin })
+    const userView = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      admin: user.isAdmin === 1
     }
 
-    return response.json({ user, token })
+    return response.json({ user: userView, token})
   }
 }
