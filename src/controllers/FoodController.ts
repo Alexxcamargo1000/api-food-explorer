@@ -8,6 +8,9 @@ import { knexConnection } from "../database/knex"
 
 export class FoodController {
   async create(request: Request, response: Response) {
+    console.log(request.file);
+
+  
     const createFoodBody = z.object({
       name: z.string(),
       description: z.string(),
@@ -125,12 +128,17 @@ export class FoodController {
         .select("ingredient_id as id")
     ).map((ingredient: Ingredient) => ingredient.id)
 
+
+    const type: TypeOfFood = await knexConnection("type_of_food").where({id: food.type_of_food_id}).first()
+
+
     const ingredients: Ingredient[] = await knexConnection("ingredients")
       .whereIn("id", ingredientsId)
 
     return response.json({
       food,
       ingredients,
+      category: type.name
     })
   }
 
@@ -169,9 +177,9 @@ export class FoodController {
       foodWithIngredient.forEach(({ food, ingredients }) => {
         ingredients.forEach(({ name: ingredient }) => {
         
-          const hasFood = food.name.includes(search)
-          const hasIngredient = ingredient.includes(search)
-         
+          const hasFood = food.name.toLowerCase().includes(search.toLowerCase())
+          const hasIngredient = ingredient.toLowerCase().includes(search.toLowerCase())
+          
           
           if (hasFood || hasIngredient) {
             searchFoodWithIngredient.push({ food, ingredients })
@@ -180,23 +188,22 @@ export class FoodController {
       })
 
       if (searchFoodWithIngredient.length < 1) {
-        return response.json({ message: "não foi encontrado nada" })
+        throw new AppError("essa comida não existe")
       
       }
 
       let searchWithoutRepeated = [] as typeof searchFoodWithIngredient
 
       searchFoodWithIngredient.forEach(({food, ingredients}) => {
-        var duplicated  = searchWithoutRepeated.findIndex(redItem => {
-            return food.id == redItem.food.id;
+        let duplicated  = searchWithoutRepeated.findIndex(foodIng => {
+            return food.id == foodIng.food.id;
         }) > -1;
     
         if(!duplicated) {
           searchWithoutRepeated.push({food,ingredients });
         }
     });
-      
-      
+    
 
       return response.json(searchWithoutRepeated)
     }
@@ -236,6 +243,7 @@ export class FoodController {
     const createFoodBody = z.object({
       name: z.string().optional(),
       description: z.string().optional(),
+      typeFood: z.string().optional(),
       priceInCents: z
         .string()
         .optional()
@@ -252,7 +260,7 @@ export class FoodController {
     })
 
     const user_id = request.user.id
-    const { name, description, priceInCents, ingredients } =
+    const { name, description, priceInCents, ingredients, typeFood } =
       createFoodBody.parse(request.body)
     const imageUpdated = request.file?.filename
     const { slug } = request.params
@@ -266,6 +274,7 @@ export class FoodController {
     }
 
     const food: Food = await knexConnection("foods").where({ slug }).first()
+    const {id:  typeFoodID}: TypeOfFood = await knexConnection("type_of_food").where({ name: typeFood }).first()
 
     if (!food) {
       throw new AppError("A comida não existe")
@@ -278,6 +287,7 @@ export class FoodController {
     food.slug = name?.replace(/\s+/g, "-").toLowerCase() ?? food.slug
     food.description = description ?? food.description
     food.priceInCents = priceInCents ?? food.priceInCents
+    food.type_of_food_id = typeFoodID ?? food.type_of_food_id
 
     if (imageUpdated) {
       await diskStorage.delete(food.image)
@@ -287,6 +297,7 @@ export class FoodController {
     }
 
     food.updated_at = new Date().toISOString()
+    
     await knexConnection("foods").where({ id: food.id }).update(food)
 
     if (ingredients) {

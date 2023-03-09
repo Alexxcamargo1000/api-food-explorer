@@ -33,4 +33,14 @@ export class TypeFood {
 
     return response.json(types)
   }
+
+  async show(request: Request, response: Response) {
+    const { id } = request.params
+    const type: TypeOfFood = await knexConnection("type_of_food").where({id: id}).first()
+
+    if(!type){
+      throw new AppError("categoria não encontrada")
+    }
+    return response.json(type)
+  }
 }
