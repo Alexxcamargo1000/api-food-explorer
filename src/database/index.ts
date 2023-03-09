@@ -4,7 +4,7 @@ import sqlite3 from 'sqlite3'
 
 export async function createDatabaseConnection() {
   const database = await open({
-    filename: path.resolve(__dirname, "database.db"),
+    filename: './db/database.db',
     driver: sqlite3.Database,
   })
 
