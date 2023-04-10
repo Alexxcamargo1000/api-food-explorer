@@ -2,13 +2,17 @@ import path from "path"
 import crypto from "crypto"
 import multer from "multer"
 
-export const TMP_FOLDER = path.resolve(__dirname, "..", "..", "tmp")
+export const TMP_FOLDER = path.resolve(__filename, "..", "..", "tmp")
 export const UPLOAD_FOLDER = path.resolve(TMP_FOLDER, "uploads")
 export const UPLOAD_FOLDER_INGREDIENTS = path.resolve(
   TMP_FOLDER,
   "uploads",
   "ingredients"
 )
+
+
+console.log(TMP_FOLDER);
+
 
 export const MULTER = {
   storage: multer.diskStorage({
