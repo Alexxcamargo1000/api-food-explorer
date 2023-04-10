@@ -4,7 +4,7 @@ import cors from "cors"
 import router from "./routes"
 import { ZodError } from "zod"
 import express, { Response, Request, NextFunction } from "express"
-import { createDatabaseConnection } from "./database"
+import { createDatabaseConnection } from "./database/index"
 import { AppError } from "./utils/AppError"
 import { UPLOAD_FOLDER, UPLOAD_FOLDER_INGREDIENTS } from "./config/upload"
 

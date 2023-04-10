@@ -8,8 +8,6 @@ import { knexConnection } from "../database/knex"
 
 export class FoodController {
   async create(request: Request, response: Response) {
-    console.log(request.file);
-
   
     const createFoodBody = z.object({
       name: z.string(),
@@ -225,7 +223,7 @@ export class FoodController {
     }
 
     const food: Food = await knexConnection("foods").where({ slug }).first()
-
+    const  diskStorage = new DiskStorage()
     if (!food) {
       throw new AppError("comida não encontrado")
     }
@@ -235,6 +233,7 @@ export class FoodController {
       .delete()
 
     await knexConnection("foods").where({ id: food.id }).delete()
+    await diskStorage.delete(food.image)
 
     return response.json({ message: `${food.name} foi deletado com sucesso` })
   }
