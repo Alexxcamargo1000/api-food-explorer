@@ -1,19 +1,22 @@
 import fs from "fs"
 import path from "path"
 
-import {
-  TMP_FOLDER,
-  UPLOAD_FOLDER,
-  UPLOAD_FOLDER_INGREDIENTS,
-} from "../config/upload"
 
 export class DiskStorage {
+   private TMP_FOLDER = path.resolve(__dirname, "..", "..", "tmp")
+   private TMP_FOLDER_PROD = path.resolve(__dirname, "..", "tmp")
+   private UPLOAD_FOLDER = path.resolve( process.env.NODE_ENV !== 'production' ? this.TMP_FOLDER : this.TMP_FOLDER_PROD , "uploads")
+   private UPLOAD_FOLDER_INGREDIENTS = path.resolve(
+  this.UPLOAD_FOLDER,
+  "ingredients"
+)
+
   async save(file: string) {
-    console.log(TMP_FOLDER);
+    console.log(this.TMP_FOLDER);
     
     await fs.promises.rename(
-      path.resolve(TMP_FOLDER, file),
-      path.resolve(UPLOAD_FOLDER, file)
+      path.resolve(this.TMP_FOLDER, file),
+      path.resolve(this.UPLOAD_FOLDER, file)
     )
 
     return file
@@ -21,15 +24,15 @@ export class DiskStorage {
 
   async saveIngredientsFile(file: string) {
     await fs.promises.rename(
-      path.resolve(TMP_FOLDER, file),
-      path.resolve(UPLOAD_FOLDER_INGREDIENTS, file)
+      path.resolve(this.TMP_FOLDER, file),
+      path.resolve(this.UPLOAD_FOLDER_INGREDIENTS, file)
     )
 
     return file
   }
 
   async delete(file: string) {
-    const filePath = path.resolve(UPLOAD_FOLDER, file)
+    const filePath = path.resolve(this.UPLOAD_FOLDER, file)
 
     try {
       await fs.promises.stat(filePath)
@@ -41,7 +44,7 @@ export class DiskStorage {
   }
 
   async deleteIngredientsFile(file: string) {
-    const filePath = path.resolve(UPLOAD_FOLDER_INGREDIENTS, file)
+    const filePath = path.resolve(this.UPLOAD_FOLDER_INGREDIENTS, file)
 
     try {
       await fs.promises.stat(filePath)

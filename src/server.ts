@@ -6,7 +6,17 @@ import { ZodError } from "zod"
 import express, { Response, Request, NextFunction } from "express"
 import { createDatabaseConnection } from "./database/index"
 import { AppError } from "./utils/AppError"
-import { UPLOAD_FOLDER, UPLOAD_FOLDER_INGREDIENTS } from "./config/upload"
+
+import path from "path"
+
+
+ const TMP_FOLDER = path.resolve(__dirname, "..", "tmp")
+ const UPLOAD_FOLDER = path.resolve(TMP_FOLDER, "uploads")
+ const UPLOAD_FOLDER_INGREDIENTS = path.resolve(
+  TMP_FOLDER,
+  "uploads",
+  "ingredients"
+)
 
 const app = express()
 
