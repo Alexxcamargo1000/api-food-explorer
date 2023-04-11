@@ -7,16 +7,8 @@ import express, { Response, Request, NextFunction } from "express"
 import { createDatabaseConnection } from "./database/index"
 import { AppError } from "./utils/AppError"
 
-import path from "path"
+import { UPLOAD_FOLDER, UPLOAD_FOLDER_INGREDIENTS } from "./config/upload"
 
-
- const TMP_FOLDER = path.resolve(__dirname, "..", "tmp")
- const UPLOAD_FOLDER = path.resolve(TMP_FOLDER, "uploads")
- const UPLOAD_FOLDER_INGREDIENTS = path.resolve(
-  TMP_FOLDER,
-  "uploads",
-  "ingredients"
-)
 
 const app = express()
 
