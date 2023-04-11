@@ -7,7 +7,6 @@ export class DiskStorage {
 
 
   async save(file: string) {
-    console.log(TMP_FOLDER);
     
     await fs.promises.rename(
       path.resolve(TMP_FOLDER, file),
