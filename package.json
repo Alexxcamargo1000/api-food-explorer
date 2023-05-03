@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "tsup src --env.NODE_ENV production & pm2-runtime start ecosystem.config.js --env production",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "migrate": "knex migrate:latest",
     "build": "tsup src --env.NODE_ENV production"
   },
