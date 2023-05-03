@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "npm run build & pm2-runtime start ecosystem.config.js --env production",
+    "start": "tsup src --env.NODE_ENV production & pm2-runtime start ecosystem.config.js --env production",
     "migrate": "knex migrate:latest",
     "build": "tsup src --env.NODE_ENV production"
   },
