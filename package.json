@@ -11,7 +11,7 @@
     "start": "pm2-runtime start ecosystem.config.js --env production",
     "migrate": "knex migrate:latest",
     "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex",
-    "build": "tsup src"
+    "build": "tsup ./src"
   },
   "author": "Alex Camargo",
   "license": "ISC",
