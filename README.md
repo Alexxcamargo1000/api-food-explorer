@@ -60,4 +60,9 @@ A aplicação disponibiliza as seguintes rotas:
 - GET /type-food/:id - busca uma categoria por id.
 
 
-Para as rotas que requerem autenticação, você precisa incluir o token JWT no cabeçalho da solicitação:
+Para as rotas que requerem autenticação, você precisa incluir o token JWT no cabeçalho da solicitação.
+
+## Autor
+
+- [Alex Camargo](https://github.com/Alexxcamargo1000)
+
