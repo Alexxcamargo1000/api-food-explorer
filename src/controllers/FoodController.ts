@@ -222,12 +222,16 @@ export class FoodController {
       throw new AppError("Usuário não autorizado")
     }
 
-    const food: Food = await knexConnection("foods").where({ slug }).first()
+    let food: Food = await knexConnection("foods").where({ slug }).first()
+    const foodById: Food = await knexConnection("foods").where({ id: slug }).first()
     const  diskStorage = new DiskStorage()
-    if (!food) {
+    if (!food && !foodById) {
       throw new AppError("comida não encontrado")
     }
+    food = foodById
 
+
+    
     await knexConnection("foods_ingredients")
       .where({ food_id: food.id })
       .delete()
